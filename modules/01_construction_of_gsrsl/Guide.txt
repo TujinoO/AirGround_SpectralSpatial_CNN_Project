@@ -1,0 +1,177 @@
+# Role Definition
+You are an expert Python developer and Data Scientist specializing in Hyperspectral Remote Sensing and Deep Learning. Your task is to implement the data processing pipeline for a high-level academic paper titled "Application of Air-Ground Synergistic Deep Learning Model for Lithium Pegmatite Prediction".
+
+# Project Goal
+We need to construct a "Ground Standard Reference Spectral Library (GSRSL)" using Python. This library will serve as the physical prior input (Ground Stream) for an AG-S²CNN deep learning model. 
+The core task is to take high-resolution ground spectral data (continuous), perform physical resampling based on the Spectral Response Function (SRF) of the GF-5 satellite, and aggregate them into standard spectral vectors for specific lithological classes.
+
+# 1. Input Data Specifications
+
+## A. Satellite Metadata (Reference for Resampling)
+I have a metadata file named `GF5A_AHSI_E89_3_N38_7_20250823_Preprocessing_metadata.txt`.
+You need to write a parser to extract:
+1.  **Bands Count**: 297 bands.
+2.  **Center Wavelengths**: Look for lines starting with `Wavelengths X = value` (e.g., `Wavelengths 1 = 387.21`).
+3.  **FWHM (Full Width at Half Maximum)**: Look for lines starting with `FWHM X = value` (e.g., `FWHM 1 = 4.38`).
+*Target Output*: Two numpy arrays of shape (297,): `sat_wavelengths` and `sat_fwhms`.
+
+## B. Ground Spectral Data (Source)
+*   **Format**: Assume the input data are CSV or TXT files exported from TSG8 software (NOT images).
+*   **Structure**:
+    *   Column 0: Wavelength (nm, e.g., 350, 351, ..., 2500).
+    *   Column 1: Reflectance (0.0 to 1.0).
+*   **Label Mapping**: A master table (CSV/Excel) containing:
+    *   `sample_filename`: ID of the sample.
+    *   `label_name`: The lithology class.
+
+## C. Class Definition
+Map the text labels to Integers exactly as follows:
+*   0: "Spodumene-rich Pegmatite" (锂辉石型富矿伟晶岩)
+*   1: "Lepidolite-rich Pegmatite" (锂云母型富矿伟晶岩)
+*   2: "Mixed-type Rich Pegmatite" (混合型富矿伟晶岩)
+*   3: "Barren Pegmatite" (贫矿伟晶岩)
+*   4: "Wall Rock" (围岩)
+
+# 2. Core Algorithms & Logic
+
+## Step 1: Preprocessing (Denoising)
+Apply Savitzky-Golay filtering to the raw ground spectra to remove high-frequency noise while preserving absorption features.
+*   **Library**: `scipy.signal.savgol_filter`
+*   **Parameters**: `window_length=15`, `polyorder=3`.
+
+## Step 2: Physical Resampling (SRF Convolution)
+To map the continuous ground spectrum (1nm resolution) to the discrete satellite bands (approx 4-8nm resolution), use Gaussian integration.
+
+**Logic for each satellite band `i`:**
+1.  Define the Gaussian Spectral Response Function (SRF) for band `i`:
+    `sigma = fwhm_i / (2 * sqrt(2 * ln(2)))`  (approx `fwhm_i / 2.355`)
+    `weight(lambda) = exp( - (lambda - center_lambda_i)^2 / (2 * sigma^2) )`
+    
+2.  Calculate the simulated reflectance `R_sat_i`:
+    `numerator = sum( R_ground(lambda) * weight(lambda) )` over the relevant wavelength range.
+    `denominator = sum( weight(lambda) )`
+    `R_sat_i = numerator / denominator`
+
+*Implementation Note*: Ensure the ground wavelength range covers the satellite band range. If ground data is missing for a specific band (e.g., edges), handle gracefully (e.g., use nearest neighbor or define as 0).
+
+## Step 3: Class Aggregation
+1.  Group all resampled vectors by their `class_id`.
+2.  Calculate the **Mean Spectrum** (Arithmetic Average) for each class.
+    `Standard_Vector_Class_k = Mean(All_Samples_in_Class_k)`
+    Shape: (297,)
+
+# 3. Code Implementation Requirements
+
+Please generate a complete, modular Python script (`build_gsrsl.py`) that includes:
+
+1.  **`parse_metadata(file_path)` function**: Robust parsing of the provided specific text format.
+2.  **`SRFResampler` Class**:
+    *   Init with satellite wavelengths and FWHMs.
+    *   Method `resample(ground_wave, ground_ref)` implementing the Gaussian convolution described above.
+3.  **Main Execution Flow**:
+    *   Load metadata.
+    *   Iterate through ground sample files (mock logic for loading CSVs).
+    *   Apply SG-Filter -> Resample -> Collect into lists.
+    *   Compute Mean for each class.
+4.  **Visualization**:
+    *   Generate a plot (matplotlib) showing the 5 final Standard Reference Spectra curves. X-axis: Wavelength (nm), Y-axis: Reflectance.
+5.  **Output Saving**:
+    *   Construct the final dictionary: `{0: array, 1: array, ..., 4: array}`.
+    *   Save as `gsrsl.npy` using `numpy.save`.
+
+# 4. Final Output Data Structure
+The `.npy` file must contain a Python dictionary:
+```python
+{
+    0: np.array([...], dtype=np.float32), # Shape (297,)
+    1: np.array([...], dtype=np.float32), # Shape (297,)
+    2: np.array([...], dtype=np.float32), # Shape (297,)
+    3: np.array([...], dtype=np.float32), # Shape (297,)
+    4: np.array([...], dtype=np.float32)  # Shape (297,)
+}
+
+技术开发指南：构建物理先验引导下的地面标准参考光谱库 (GSRSL)
+1. 项目背景与目标
+本模块旨在为《融合空地高光谱数据的深度学习模型在新疆塔木切伟晶岩锂矿预测中的应用研究》一文构建核心物理先验数据——地面标准参考光谱库 (Ground Standard Reference Spectral Library, GSRSL)。
+该库是后续 AG-S²CNN 深度学习模型的“地面流（Ground Stream）”输入基准。核心任务是将地面手持光谱仪（ASD）采集的高光谱分辨率（1nm）连续数据，通过物理卷积运算，降维重采样至与天基GF-5卫星完全一致的离散波段空间，并按矿物类别进行标准化聚合。
+
+2. 输入数据规范 (Input Specifications)
+2.1 地面实测数据源 (Ground Source)
+数据格式：CSV 或 TXT 文本格式（注意： 严禁使用JPG图像提取，需使用TSG8导出的原始数值文件以确保物理精度）。
+数据结构：
+列1：波长 (Wavelength, nm)，范围通常覆盖 350-2500nm。
+列2：反射率 (Reflectance)，归一化数值 (0-1)。
+样本索引表 (Label Table)：Excel/CSV文件，包含两列：
+Sample_ID：对应光谱数据的文件名。
+Class_Name：五大类别（锂辉石型富矿伟晶岩、锂云母型富矿伟晶岩、混合型富矿伟晶岩、贫矿伟晶岩、围岩）。
+2.2 天基目标参数 (Satellite Target)
+基于提供的 GF5A_AHSI_E89_3_N38_7_20250823_Preprocessing_metadata.txt 文件：
+
+波段数 (B)：297个有效波段。
+中心波长 (λ i )：从metadata中提取 Wavelengths 1 到 Wavelengths 297。
+半波宽 (FWHM)：从metadata中提取 FWHM 1 到 FWHM 297。
+光谱响应函数 (SRF)：假设为高斯分布 (Gaussian Distribution)。
+3. 核心算法逻辑 (Core Algorithms)
+3.1 预处理：Savitzky-Golay 平滑
+在重采样前，需对地面原始数据进行去噪，保留波形特征。
+
+算法：scipy.signal.savgol_filter
+参数建议：窗口长度 (window_length) = 15~21，多项式阶数 (polyorder) = 2~3。
+3.2 物理重采样：光谱响应函数卷积 (SRF Convolution)
+这是实现“SWIR数据上星”的关键物理过程。对于卫星的第 i 个波段，其模拟反射率 
+
+
+3.3 类别聚合 (Aggregation)
+对同一类别下的所有样本，在重采样后计算其算术平均光谱 (Mean Spectrum)，作为该类别的标准“纯净”端元。
+
+4. 开发任务清单 (Development Tasks)
+请基于 Python (numpy, pandas, scipy) 实现以下类和函数：
+
+步骤 1: 解析卫星元数据
+编写函数 parse_gf5_metadata(filepath)：
+
+读取提供的 .txt 文件。
+提取 297 个波段的 Wavelengths 和 FWHM 数值。
+返回两个形状为 (297,) 的 numpy 数组。
+步骤 2: 构建重采样器
+编写类 SpectralResampler：
+
+Init: 接收卫星的中心波长和FWHM。
+Method gaussian_srf(center, fwhm, x_grid): 生成高斯响应曲线。
+Method resample(ground_wavelength, ground_reflectance):
+确保地面波长范围覆盖卫星波段。
+执行积分卷积运算（可简化为加权平均）。
+返回形状为 (297,) 的重采样光谱数组。
+步骤 3: 批量处理与库生成
+编写主流程脚本 build_gsrsl.py：
+
+定义类别映射：
+Python
+ |
+CLASS_MAP = {
+    "锂辉石型富矿伟晶岩": 0,
+    "锂云母型富矿伟晶岩": 1,
+    "混合型富矿伟晶岩": 2,
+    "贫矿伟晶岩": 3,
+    "围岩": 4
+}
+加载数据：读取索引表，遍历所有地面样本文件。
+流水线处理：
+Load CSV -> S-G Filter -> SRF Resample -> Store in temporary list by class.
+计算标准谱：对每个类别的列表取 np.mean(axis=0)。
+构建字典：生成符合要求的字典 {0: array, 1: array, ...}。
+持久化存储：使用 np.save('gsrsl.npy', final_dict) 保存。
+5. 输出数据格式规范 (Output Schema)
+最终生成的 gsrsl.npy 必须严格满足以下结构，以便直接被 AG-S²CNN 模型加载：
+
+文件类型: Numpy Binary File (.npy)
+内容类型: Python Dictionary
+键 (Key): int (0 - 4, 对应上述地质类别)
+值 (Value): numpy.ndarray
+Dtype: float32
+Shape: (297,) (严格对应 GF-5 的 297 个波段)
+数值范围: 0.0 - 1.0 (反射率)
+6. 特别注意 (Critical Notes)
+波段对齐：必须检查地面光谱的波长覆盖范围。如果 GF-5 的某些波段（如两端的边缘波段）超出了 ASD 的测量范围，需进行合理的插值或填零处理（建议填零或取最近邻，并在日志中警告）。
+异常剔除：在计算平均光谱前，建议加入简单的逻辑剔除明显的错误数据（如反射率 < 0 或 > 1 的异常点）。
+可视化验证：代码运行结束后，需输出一张 PNG 图片，绘制这 5 条标准参考光谱曲线（X轴为GF-5波长），用于人工核查光谱形态是否保留了锂云母/锂辉石在 2200nm 处的特征吸收。

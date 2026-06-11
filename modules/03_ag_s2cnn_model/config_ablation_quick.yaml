@@ -1,0 +1,62 @@
+﻿model:
+  num_bands: 297
+  spatial_size: 25
+  num_classes: 1
+
+training:
+  batch_size: 8
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  l1_regularization: 0.0
+  num_epochs: 24
+  early_stopping_patience: 4
+  train_ratio: 0.7
+  val_ratio: 0.1
+  num_workers: 0
+  background_sample_ratio: 3.0
+  max_samples_per_class: 2000
+  focal_loss_alpha: 0.75
+  focal_loss_gamma: 2.0
+  hnm_ratio: 0.5
+  hnm_weight: 0.2
+  separation_weight: 0.2
+  separation_margin: 0.06
+  boost:
+    enabled: false
+    use_ema: false
+    use_swa: false
+    use_mixup: false
+    use_cutmix: false
+    use_cosine_lr: false
+    eval_threshold: 0.5
+    eval_tta: false
+    tta_modes: [none]
+
+data:
+  image_path: "E:/code/AirGround_SpectralSpatial_CNN_Project/data/03_model/GF5A_AHSI_E89.3_N38.7_20240126_experiment.tif"
+  ground_truth_path: "E:/code/AirGround_SpectralSpatial_CNN_Project/data/03_model/pseudo_label_balance_refined_final.tif"
+  gsrsl_path: "E:/code/AirGround_SpectralSpatial_CNN_Project/data/03_model/gsrsl.npy"
+  output_dir: "E:/code/AirGround_SpectralSpatial_CNN_Project/data/03_model/output"
+
+augmentation:
+  enabled: true
+  noise_std: 0.03
+
+device:
+  use_cuda: true
+  gpu_id: 0
+
+labels:
+  target_class_name: "Rich Ore Pegmatite"
+  gt_target_labels: [1]
+  gsrsl_target_labels: [0, 1, 2]
+  background_class_index: 0
+
+visualization:
+  dense_stride: 4
+  dense_batch_size: 64
+  dense_num_workers: 0
+  probability_threshold: 0.5
+  tta_enabled: false
+  max_dense_points: 60000
+

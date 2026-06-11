@@ -1,0 +1,5 @@
+[flake8]
+ignore = E501,W293,W291,E128,W391,F401
+per-file-ignores =
+    examples/*.py: F541,E302
+    tests/**/*.py: F541,F841,E226,E712

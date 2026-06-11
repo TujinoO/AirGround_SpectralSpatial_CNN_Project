@@ -1,0 +1,24 @@
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Class 0 (Spodumene-rich Pegmatite (锂辉石型富矿伟晶岩)): 297 valid bands (mean=0.4348), 0 NaN bands
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Class 1 (Lepidolite-rich Pegmatite (锂云母型富矿伟晶岩)): 297 valid bands (mean=0.4041), 0 NaN bands
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Class 2 (Mixed-type Rich Pegmatite (混合型富矿伟晶岩)): 297 valid bands (mean=0.3915), 0 NaN bands
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Class 3 (Barren Pegmatite (贫矿伟晶岩)): 297 valid bands (mean=0.3492), 0 NaN bands
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Class 4 (Wall Rock (围岩)): 297 valid bands (mean=0.2536), 0 NaN bands
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Output directory ensured: examples
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - GSRSL successfully saved to examples\demo_gsrsl.npy
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Output file size: 6,479 bytes (6.33 KB)
+2026-01-26 02:09:52 - gsrsl_pipeline.output - INFO - Output directory ensured: examples
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization successfully saved to examples\demo_gsrsl_visualization.png
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization file size: 401,310 bytes (391.90 KB)
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization generation completed successfully
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Class 0 (Spodumene-rich Pegmatite (锂辉石型富矿伟晶岩)): 292 valid bands (mean=0.3000), 5 NaN bands
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Class 1 (Lepidolite-rich Pegmatite (锂云母型富矿伟晶岩)): 297 valid bands (mean=0.4000), 0 NaN bands
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Class 2 (Mixed-type Rich Pegmatite (混合型富矿伟晶岩)): 287 valid bands (mean=0.5000), 10 NaN bands
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Class 3 (Barren Pegmatite (贫矿伟晶岩)): 297 valid bands (mean=0.6000), 0 NaN bands
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Class 4 (Wall Rock (围岩)): 297 valid bands (mean=0.7000), 0 NaN bands
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Output directory ensured: examples
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - GSRSL successfully saved to examples\demo_gsrsl_with_nan.npy
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Output file size: 6,479 bytes (6.33 KB)
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Output directory ensured: examples
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization successfully saved to examples\demo_gsrsl_with_nan_visualization.png
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization file size: 343,688 bytes (335.63 KB)
+2026-01-26 02:09:53 - gsrsl_pipeline.output - INFO - Visualization generation completed successfully

@@ -1,0 +1,27 @@
+# Core dependencies for hyperspectral pseudo-label generator
+# 高光谱伪标签生成器的核心依赖
+
+# Numerical computing
+# 数值计算
+numpy>=1.21.0,<2.0.0
+
+# Machine learning and PCA
+# 机器学习和PCA
+scikit-learn>=1.0.0,<2.0.0
+
+# Geospatial data handling
+# 地理空间数据处理
+rasterio>=1.3.0,<2.0.0
+
+# Visualization
+# 可视化
+matplotlib>=3.5.0,<4.0.0
+
+# Property-based testing
+# 基于属性的测试
+hypothesis>=6.0.0,<7.0.0
+
+# Testing framework
+# 测试框架
+pytest>=7.0.0,<8.0.0
+pytest-cov>=3.0.0,<4.0.0

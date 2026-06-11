@@ -1,0 +1,23 @@
+# GSRSL Pipeline Dependencies
+# GSRSL管道依赖项
+
+# Core numerical computing
+# 核心数值计算
+numpy>=1.21.0
+
+# Data processing and manipulation
+# 数据处理和操作
+pandas>=1.3.0
+
+# Scientific computing (for Savitzky-Golay filter)
+# 科学计算（用于Savitzky-Golay滤波器）
+scipy>=1.7.0
+
+# Visualization
+# 可视化
+matplotlib>=3.4.0
+
+# Testing frameworks
+# 测试框架
+pytest>=7.0.0
+hypothesis>=6.0.0
